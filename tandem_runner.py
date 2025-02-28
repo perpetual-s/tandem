@@ -25,13 +25,26 @@ def main():
                      help="Disable meta-cognitive feedback")
     parser.add_argument("--meta-iterations", type=int, default=3,
                      help="Maximum number of meta-cognitive iterations")
+    parser.add_argument("--file", action="store_true", 
+                     help="Read query from prompt.txt instead of user input")
     args = parser.parse_args()
     
-    # Step 0: Read the overall query from prompt.txt.
-    query = read_prompt_from_file()
-    if not query:
-        print("No Query provided. Exiting.")
-        return
+    # Step 0: Get query from user input or prompt.txt
+    
+    if args.file:
+        # Read from prompt.txt if --file flag is provided
+        query = read_prompt_from_file()
+        if not query:
+            print("No query found in prompt.txt. Exiting.")
+            return
+    else:
+        # Get query from user input
+        print("\n=== Enter Your Problem ===")
+        print("Type your question or problem below and press Enter when finished:")
+        query = input("> ")
+        if not query.strip():
+            print("No query provided. Exiting.")
+            return
 
     print("\n=== Problem Statement ===")
     print(query)

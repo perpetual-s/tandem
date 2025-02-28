@@ -1,11 +1,13 @@
-from tandem_core import read_prompt_from_file
-import model_manager
-from self_consistency import self_consistency_solve
+from common_utils import read_prompt_from_file
 import argparse
 
 # Global variables for modelfile locations.
 ORIGINAL_MODELFIL_PATH = "_modelfile/llama3.3-70b"
 CLASSIFIER_MODELFIL_PATH = "_modelfile/llama3.3-classifier"
+
+# Import these after defining the paths to avoid circular imports
+import model_manager
+from self_consistency import self_consistency_solve
 
 def main():
     # You can customize the behavior with various flags:
@@ -16,7 +18,7 @@ def main():
     parser.add_argument("--iterations", type=int, default=3, 
                       help="Number of solutions to generate for self-consistency")
     parser.add_argument("--confidence", type=float, default=60.0,
-                     help="Confidence threshold (%) below which to apply meta-cognitive feedback")
+                     help="Confidence threshold below which to apply meta-cognitive feedback")
     parser.add_argument("--meta", action="store_true", default=True,
                      help="Use meta-cognitive feedback for low confidence answers")
     parser.add_argument("--no-meta", action="store_false", dest="meta",
@@ -35,7 +37,7 @@ def main():
     print(query)
 
     # Step 1: Prepare a temporary model based on the query's classification.
-    temp_model = model_manager.prepare_temporary_model(query)
+    temp_model, problem_category = model_manager.prepare_temporary_model(query, return_category=True)
     if not temp_model:
         print("Error preparing temporary model.")
         return
@@ -51,7 +53,8 @@ def main():
         num_answers=args.iterations,
         use_meta_cognitive=args.meta,
         confidence_threshold=args.confidence,
-        meta_max_iterations=args.meta_iterations
+        meta_max_iterations=args.meta_iterations,
+        problem_category=problem_category  # Pass the category to avoid reclassification
     )
     
     # Print the solution and metadata

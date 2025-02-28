@@ -1,7 +1,10 @@
 import os
 import re
 from common_utils import get_model_response, time_function_call 
-from tandem_runner import ORIGINAL_MODELFIL_PATH, CLASSIFIER_MODELFIL_PATH
+
+# Define paths here to avoid circular imports
+ORIGINAL_MODELFIL_PATH = "_modelfile/llama3.3-70b"
+CLASSIFIER_MODELFIL_PATH = "_modelfile/llama3.3-classifier"
 
 def classify_problem(problem: str, classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH) -> str:
     """
@@ -270,7 +273,8 @@ def delete_temporary_model(model_name: str) -> bool:
 
 def prepare_temporary_model(problem: str, 
                               original_modelfile_path: str = ORIGINAL_MODELFIL_PATH,
-                              classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH) -> str:
+                              classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH,
+                              return_category: bool = False):
     """
     Prepares a temporary model for the given problem by:
       1. Creating a temporary classifier to classify the problem.
@@ -278,7 +282,15 @@ def prepare_temporary_model(problem: str,
       3. Creating a temporary modelfile.
       4. Creating the temporary model using the Ollama CLI.
     
-    Returns the temporary model name if successful; otherwise, an empty string.
+    Args:
+        problem: The problem to solve
+        original_modelfile_path: Path to the base modelfile
+        classifier_modelfile_path: Path to the classifier modelfile
+        return_category: If True, returns both model name and category
+    
+    Returns:
+        If return_category is False (default): temporary model name if successful; otherwise, an empty string.
+        If return_category is True: tuple of (model_name, category)
     """
     category = classify_problem(problem, classifier_modelfile_path=classifier_modelfile_path)
     print(f"\n=== Problem Classification ===")
@@ -286,10 +298,17 @@ def prepare_temporary_model(problem: str,
     additional_params = get_additional_parameters(category)
     temporary_modelfile = create_temporary_modelfile(original_modelfile_path, additional_params)
     temporary_model_name = f"temp_{category.lower().replace(' ', '_')}_model"
+    
     if create_temporary_model(temporary_model_name, temporary_modelfile):
-        return temporary_model_name
+        if return_category:
+            return temporary_model_name, category
+        else:
+            return temporary_model_name
     else:
-        return ""
+        if return_category:
+            return "", None
+        else:
+            return ""
 
 # Example usage:
 # if __name__ == "__main__":

@@ -94,3 +94,19 @@ This framework addresses a significant challenge in the AI industry by empowerin
 - Regular expressions for pattern extraction
 - Dynamic model parameter configuration
 - Advanced prompt engineering techniques
+
+### Usage
+
+Run the tandem_runner.py script to solve problems using the Project Tandem framework:
+
+```bash
+python tandem_runner.py [options]
+```
+
+Available options:
+- `--help`: Display help information about command-line options
+- `--iterations N`: Number of solutions to generate for self-consistency (default: 3)
+- `--confidence THRESHOLD`: Confidence threshold below which to apply meta-cognitive feedback (default: 60.0)
+- `--meta`: Use meta-cognitive feedback for low confidence answers (default: enabled)
+- `--no-meta`: Disable meta-cognitive feedback
+- `--meta-iterations N`: Maximum number of meta-cognitive iterations (default: 3)

@@ -95,6 +95,16 @@ This framework addresses a significant challenge in the AI industry by empowerin
 - Dynamic model parameter configuration
 - Advanced prompt engineering techniques
 
+### User Interface Features
+
+Project Tandem offers an enhanced user experience with the following features:
+
+- **Colorful Terminal Output**: Color-coded responses and status messages for better readability
+- **Interactive Mode**: Conveniently enter problems directly in the terminal
+- **Progress Indicators**: Clear step-by-step indicators showing the solution process
+- **Solution Visualization**: Visual representation of answer agreement and distribution
+- **Styled Output**: Boxed final solutions and formatted results for easier reading
+
 ### Usage
 
 Run the tandem_runner.py script to solve problems using the Project Tandem framework:
@@ -125,3 +135,13 @@ python tandem_runner.py --file
 # Advanced usage with custom parameters
 python tandem_runner.py --iterations 5 --confidence 70 --meta-iterations 4
 ```
+
+### Output Interpretation
+
+Tandem provides rich visual feedback on the solution process:
+
+- **Problem Classification**: Shows detected problem category and model configuration
+- **Solution Agreement**: Visual indicator of agreement percentage among different solutions
+- **Answer Distribution**: Text-based bar chart showing the distribution of answers
+- **Verification Status**: Color-coded verification results with feedback
+- **Meta-cognitive Details**: When applicable, shows refinement iterations and improvements made

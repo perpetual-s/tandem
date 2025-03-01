@@ -21,6 +21,7 @@ from self_consistency import self_consistency_solve
 def main():
     # You can customize the behavior with various flags:
     # python tandem_runner.py --iterations 5 --confidence 70 --meta-iterations 4
+    # python tandem_runner.py --input-file your_file.txt
 
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Project Tandem - LLM Enhancement Pipeline")
@@ -40,16 +41,26 @@ def main():
                      help="Disable solution hybridization")
     parser.add_argument("--file", action="store_true", 
                      help="Read query from prompt.txt instead of user input")
+    parser.add_argument("--input-file", type=str,
+                     help="Path to a specific input file to read the query from")
     args = parser.parse_args()
     
-    # Step 0: Get query from user input or prompt.txt
+    # Step 0: Get query from user input or file
     print_header("Project Tandem")
     colored_print("An AI-powered problem-solving framework", Colors.YELLOW)
     print("\n")
     
     print_step(1, "Getting problem statement")
     
-    if args.file:
+    if args.input_file:
+        # Read from the specified file path
+        colored_print(f"Reading from {args.input_file}...", Colors.YELLOW)
+        query = read_prompt_from_file(args.input_file)
+            
+        if not query:
+            colored_print(f"No query found in {args.input_file}. Exiting.", Colors.RED, bold=True)
+            return
+    elif args.file:
         # Read from prompt.txt if --file flag is provided
         colored_print("Reading from prompt.txt...", Colors.YELLOW)
         query = read_prompt_from_file()
@@ -62,7 +73,8 @@ def main():
         colored_print("\nEnter Your Problem", Colors.BLUE, bold=True)
         colored_print("Type or paste your question below and press Enter.", Colors.YELLOW)
         colored_print("For single-line input, just type and press Enter.", Colors.YELLOW)
-        colored_print("For multi-line input, add your problem to prompt.txt and use the --file flag.", Colors.YELLOW)
+        colored_print("For multi-line input, add your problem to a file and use --input-file [path]", Colors.YELLOW)
+        colored_print("Or use prompt.txt with the --file flag.", Colors.YELLOW)
         print()
         
         # Simple approach that works reliably for single-line inputs

@@ -1,4 +1,4 @@
-# Project Tandem (v0.2.0)
+# Project Tandem
 
 ## A Framework for Enhancing Local Large Language Models
 

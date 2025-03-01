@@ -56,9 +56,18 @@ def main():
     else:
         # Get query from user input with a more attractive prompt
         colored_print("\nEnter Your Problem", Colors.BLUE, bold=True)
-        colored_print("Type your question or problem below and press Enter when finished:", Colors.YELLOW)
-        print(f"{Colors.GREEN}> {Colors.ENDC}", end="")
+        colored_print("Type or paste your question below and press Enter.", Colors.YELLOW)
+        colored_print("For single-line input, just type and press Enter.", Colors.YELLOW)
+        colored_print("For multi-line input, add your problem to prompt.txt and use the --file flag.", Colors.YELLOW)
+        print()
+        
+        # Simple approach that works reliably for single-line inputs
+        print("➤ ", end="")
         query = input()
+        
+        # Handle quoted text (often from pasting)
+        if query.startswith('"') and query.endswith('"'):
+            query = query[1:-1]
         
         if not query.strip():
             colored_print("No query provided. Exiting.", Colors.RED, bold=True)

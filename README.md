@@ -113,11 +113,12 @@ Run the tandem_runner.py script to solve problems using the Project Tandem frame
 python tandem_runner.py [options]
 ```
 
-By default, the script will prompt you to enter your question or problem. You can also provide a problem in the prompt.txt file and use the --file flag.
+By default, the script will prompt you to enter your question or problem. You can also provide a problem in a text file and use the --input-file flag to specify the file location.
 
 Available options:
 - `--help`: Display help information about command-line options
-- `--file`: Read the problem from prompt.txt instead of user input
+- `--input-file PATH`: Read the problem from a specific file
+- `--file`: Read the problem from prompt.txt (legacy option)
 - `--iterations N`: Number of solutions to generate for self-consistency (default: 3)
 - `--confidence THRESHOLD`: Confidence threshold below which to apply enhancement techniques (default: 80.0)
 - `--meta`: Use meta-cognitive feedback for low confidence answers (default: enabled)
@@ -131,8 +132,8 @@ Examples:
 # Interactive mode (prompts for input)
 python tandem_runner.py
 
-# Read from prompt.txt
-python tandem_runner.py --file
+# Read from a specific file
+python tandem_runner.py --input-file path/to/problem.txt
 
 # Advanced usage with custom parameters
 python tandem_runner.py --iterations 5 --confidence 70 --meta-iterations 4

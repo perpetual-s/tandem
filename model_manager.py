@@ -86,7 +86,7 @@ def get_additional_parameters(problem_type: str, stage: str = None) -> str:
     - mirostat: Sampling algorithm (0=disabled, 1=Mirostat, 2=Mirostat 2.0) [Default: 0]
     """
     base_params = (
-        "PARAMETER num_ctx 3072\n"  # Increased context window for all categories
+        "PARAMETER num_ctx 2048\n"  # Default context window size
     )
     
     category = problem_type.lower()

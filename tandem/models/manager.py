@@ -89,7 +89,7 @@ def get_optimal_parameters(problem_type: str) -> str:
         String containing the Ollama parameter settings
     """
     base_params = (
-        "PARAMETER num_ctx 4096\n"  # Increased context window for all categories
+        "PARAMETER num_ctx 2048\n"  # Default context window size
     )
     
     category = problem_type.lower()

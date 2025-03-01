@@ -119,7 +119,7 @@ Available options:
 - `--help`: Display help information about command-line options
 - `--file`: Read the problem from prompt.txt instead of user input
 - `--iterations N`: Number of solutions to generate for self-consistency (default: 3)
-- `--confidence THRESHOLD`: Confidence threshold below which to apply meta-cognitive feedback (default: 60.0)
+- `--confidence THRESHOLD`: Confidence threshold below which to apply meta-cognitive feedback (default: 80.0)
 - `--meta`: Use meta-cognitive feedback for low confidence answers (default: enabled)
 - `--no-meta`: Disable meta-cognitive feedback
 - `--meta-iterations N`: Maximum number of meta-cognitive iterations (default: 3)

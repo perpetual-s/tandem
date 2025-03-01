@@ -26,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser(description="Project Tandem - LLM Enhancement Pipeline")
     parser.add_argument("--iterations", type=int, default=3, 
                       help="Number of solutions to generate for self-consistency")
-    parser.add_argument("--confidence", type=float, default=60.0,
+    parser.add_argument("--confidence", type=float, default=80.0,
                      help="Confidence threshold below which to apply meta-cognitive feedback")
     parser.add_argument("--meta", action="store_true", default=True,
                      help="Use meta-cognitive feedback for low confidence answers")

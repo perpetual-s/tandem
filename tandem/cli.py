@@ -24,8 +24,8 @@ def main():
     parser.add_argument("--iterations", "-i", type=int, default=3, 
                       help="Number of solutions to generate for self-consistency (default: 3)")
     
-    parser.add_argument("--confidence", "-c", type=float, default=60.0,
-                     help="Confidence threshold %% below which to apply meta-cognitive feedback (default: 60.0)")
+    parser.add_argument("--confidence", "-c", type=float, default=80.0,
+                     help="Confidence threshold %% below which to apply meta-cognitive feedback (default: 80.0)")
     
     parser.add_argument("--meta", action="store_true", default=True,
                      help="Use meta-cognitive feedback for low confidence answers (default: True)")

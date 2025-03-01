@@ -1,4 +1,4 @@
-# Project Tandem
+# Project Tandem (v0.2.0)
 
 ## A Framework for Enhancing Local Large Language Models
 
@@ -119,10 +119,12 @@ Available options:
 - `--help`: Display help information about command-line options
 - `--file`: Read the problem from prompt.txt instead of user input
 - `--iterations N`: Number of solutions to generate for self-consistency (default: 3)
-- `--confidence THRESHOLD`: Confidence threshold below which to apply meta-cognitive feedback (default: 80.0)
+- `--confidence THRESHOLD`: Confidence threshold below which to apply enhancement techniques (default: 80.0)
 - `--meta`: Use meta-cognitive feedback for low confidence answers (default: enabled)
 - `--no-meta`: Disable meta-cognitive feedback
 - `--meta-iterations N`: Maximum number of meta-cognitive iterations (default: 3)
+- `--hybridize`: Enable solution hybridization to combine multiple approaches (default: enabled)
+- `--no-hybridize`: Disable solution hybridization
 
 Examples:
 ```bash
@@ -134,6 +136,12 @@ python tandem_runner.py --file
 
 # Advanced usage with custom parameters
 python tandem_runner.py --iterations 5 --confidence 70 --meta-iterations 4
+
+# Disable solution hybridization but keep meta-cognitive feedback
+python tandem_runner.py --no-hybridize
+
+# Use only self-consistency without additional enhancements
+python tandem_runner.py --no-meta --no-hybridize
 ```
 
 ### Output Interpretation
@@ -145,3 +153,63 @@ Tandem provides rich visual feedback on the solution process:
 - **Answer Distribution**: Text-based bar chart showing the distribution of answers
 - **Verification Status**: Color-coded verification results with feedback
 - **Meta-cognitive Details**: When applicable, shows refinement iterations and improvements made
+
+### Version History
+
+#### v0.2.0 (February 2025)
+
+This release introduces major enhancements to improve the framework's performance and user experience:
+
+**Core Performance Improvements:**
+
+1. **Progressive Temperature Control**
+   - Implemented stage-specific parameter optimization for different phases of problem-solving
+   - Added exploration, calculation, and verification stages with tailored parameters
+   - Customized parameter profiles for different problem domains (math, coding, writing, science)
+   - Enabled dynamic temperature adjustment based on problem complexity
+
+2. **Quality-Based Weighted Voting**
+   - Enhanced solution selection with sophisticated quality scoring
+   - Added weighting based on verification steps, structured format, and reasoning quality
+   - Implemented quality factor analysis (verification steps, reasoning depth, calculations)
+   - Added detailed scoring visualization in the console output
+
+3. **Targeted Meta-Cognitive Feedback**
+   - Redesigned the feedback system with domain-specific critique templates
+   - Implemented progressive focus areas (accuracy → completeness → presentation)
+   - Added staged refinement process that addresses different aspects in each iteration
+   - Enhanced final verification stage with comprehensive solution checking
+
+4. **Solution Hybridization**
+   - Added capability to combine the best elements from multiple solution approaches
+   - Implemented intelligent segmentation of solution components
+   - Added comparative evaluation to ensure hybrid solutions are superior
+   - Created domain-specific hybridization strategies for different problem types
+
+**User Experience Improvements:**
+
+1. **Enhanced Console Readability**
+   - Completely redesigned console output with improved vertical spacing
+   - Added clear visual separation between process stages
+   - Improved heading and section organization for better readability
+   - Enhanced progress tracking with better visual indicators
+
+2. **Detailed Process Visualization**
+   - Added comprehensive solution quality metrics display
+   - Enhanced meta-cognitive process reporting
+   - Implemented detailed hybridization information
+   - Added clearer iteration tracking and focused improvement areas
+
+3. **Improved Command-Line Interface**
+   - Added hybridization control via command-line flags
+   - Enhanced configuration display at startup
+   - Improved error handling and status messages
+   - Added better progress indication throughout the process
+
+#### v0.1.0 (January 2025)
+
+Initial release of Project Tandem featuring:
+- Self-consistency solution generation
+- Basic meta-cognitive feedback
+- Problem classification and parameter optimization
+- Answer extraction and normalization

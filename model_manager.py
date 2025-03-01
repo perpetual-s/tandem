@@ -65,9 +65,14 @@ def classify_problem(problem: str, classifier_modelfile_path: str = CLASSIFIER_M
         print("Could not parse classification output. Defaulting to 'General'.")
         return "General"
 
-def get_additional_parameters(problem_type: str) -> str:
+def get_additional_parameters(problem_type: str, stage: str = None) -> str:
     """
-    Returns optimized parameter settings for the modelfile based on the problem category.
+    Returns optimized parameter settings for the modelfile based on the problem category
+    and processing stage.
+    
+    Parameters:
+    - problem_type: The category of problem (math, coding, writing, etc.)
+    - stage: The processing stage (exploration, calculation, verification, or None for default)
     
     Ollama supported parameters:
     - temperature: Controls randomness (lower = more deterministic) [Default: 0.8]
@@ -86,17 +91,56 @@ def get_additional_parameters(problem_type: str) -> str:
     
     category = problem_type.lower()
     if category == "math":
-        return (
-            "# Optimized parameters for math problems - high precision, deterministic:\n"
-            f"{base_params}"
-            "PARAMETER temperature 0.1\n"      # More deterministic for math
-            "PARAMETER top_p 0.2\n"            # Very focused sampling
-            "PARAMETER top_k 30\n"             # Limited token set for precision
-            "PARAMETER seed 42\n"              # Fixed seed for reproducibility
-            "PARAMETER repeat_penalty 1.3\n"   # Stronger penalty for repetition
-            "PARAMETER min_p 0.1\n"            # Filter out unlikely tokens
-            "PARAMETER repeat_last_n 128\n"    # Look back further to avoid repetition
-        )
+        # Progressive temperature control for math problems
+        if stage == "exploration":
+            return (
+                "# Math exploration stage - more creative for initial reasoning:\n"
+                f"{base_params}"
+                "PARAMETER temperature 0.7\n"      # Higher temp for exploring approaches
+                "PARAMETER top_p 0.9\n"            # Wider sampling for diverse ideas
+                "PARAMETER top_k 40\n"             # Standard token limit
+                "PARAMETER seed 0\n"               # Random seed for diversity
+                "PARAMETER repeat_penalty 1.1\n"   # Standard repetition penalty
+                "PARAMETER min_p 0.05\n"           # Standard minimum probability
+                "PARAMETER repeat_last_n 64\n"     # Standard repetition window
+            )
+        elif stage == "calculation":
+            return (
+                "# Math calculation stage - balanced approach:\n"
+                f"{base_params}"
+                "PARAMETER temperature 0.3\n"      # Moderate temp for calculations
+                "PARAMETER top_p 0.5\n"            # More focused sampling
+                "PARAMETER top_k 30\n"             # Limited token set
+                "PARAMETER seed 42\n"              # Fixed seed for reproducibility
+                "PARAMETER repeat_penalty 1.2\n"   # Moderate repetition penalty
+                "PARAMETER min_p 0.08\n"           # Slightly higher minimum probability
+                "PARAMETER repeat_last_n 96\n"     # Larger repetition window
+            )
+        elif stage == "verification":
+            return (
+                "# Math verification stage - high precision for checking:\n"
+                f"{base_params}"
+                "PARAMETER temperature 0.1\n"      # Very deterministic for verification
+                "PARAMETER top_p 0.2\n"            # Highly focused sampling
+                "PARAMETER top_k 20\n"             # Very limited token set
+                "PARAMETER seed 42\n"              # Fixed seed for reproducibility
+                "PARAMETER repeat_penalty 1.3\n"   # Strong repetition penalty
+                "PARAMETER min_p 0.1\n"            # Higher minimum probability threshold
+                "PARAMETER repeat_last_n 128\n"    # Large repetition window
+            )
+        else:
+            # Default math parameters if no stage specified
+            return (
+                "# Optimized parameters for math problems - high precision, deterministic:\n"
+                f"{base_params}"
+                "PARAMETER temperature 0.1\n"      # More deterministic for math
+                "PARAMETER top_p 0.2\n"            # Very focused sampling
+                "PARAMETER top_k 30\n"             # Limited token set for precision
+                "PARAMETER seed 42\n"              # Fixed seed for reproducibility
+                "PARAMETER repeat_penalty 1.3\n"   # Stronger penalty for repetition
+                "PARAMETER min_p 0.1\n"            # Filter out unlikely tokens
+                "PARAMETER repeat_last_n 128\n"    # Look back further to avoid repetition
+            )
     elif category == "coding":
         return (
             "# Optimized parameters for coding tasks - balanced precision and creativity:\n"
@@ -254,10 +298,10 @@ def create_temporary_model(model_name: str, modelfile_content: str) -> bool:
         return False
 
     command = f"ollama create {model_name} -f {temp_modelfile}"
-    print(f"\n=== Creating Specialized Model ===")
-    print(f"Executing: {command}")
+    print(f"\n\n=== Creating Specialized Model ===")
+    print(f"Executing: {command}\n")
     os.system(command)
-    print(f"Model '{model_name}' created successfully with optimized parameters.")
+    print(f"\nModel '{model_name}' created successfully with optimized parameters.\n")
     return True
 
 def delete_temporary_model(model_name: str) -> bool:
@@ -265,20 +309,21 @@ def delete_temporary_model(model_name: str) -> bool:
     Deletes the temporary Ollama model using the CLI.
     """
     command = f"ollama rm {model_name}"
-    print(f"\n=== Cleaning Up Resources ===")
-    print(f"Executing: {command}")
+    print(f"\n\n=== Cleaning Up Resources ===")
+    print(f"Executing: {command}\n")
     os.system(command)
-    print(f"Model '{model_name}' deleted successfully.")
+    print(f"\nModel '{model_name}' deleted successfully.\n")
     return True
 
 def prepare_temporary_model(problem: str, 
                               original_modelfile_path: str = ORIGINAL_MODELFIL_PATH,
                               classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH,
-                              return_category: bool = False):
+                              return_category: bool = False,
+                              stage: str = None):
     """
     Prepares a temporary model for the given problem by:
       1. Creating a temporary classifier to classify the problem.
-      2. Generating additional parameters based on the classification.
+      2. Generating additional parameters based on the classification and stage.
       3. Creating a temporary modelfile.
       4. Creating the temporary model using the Ollama CLI.
     
@@ -287,6 +332,8 @@ def prepare_temporary_model(problem: str,
         original_modelfile_path: Path to the base modelfile
         classifier_modelfile_path: Path to the classifier modelfile
         return_category: If True, returns both model name and category
+        stage: The processing stage (exploration, calculation, verification, etc.)
+              This enables progressive temperature control
     
     Returns:
         If return_category is False (default): temporary model name if successful; otherwise, an empty string.
@@ -295,7 +342,9 @@ def prepare_temporary_model(problem: str,
     category = classify_problem(problem, classifier_modelfile_path=classifier_modelfile_path)
     print(f"\n=== Problem Classification ===")
     print(f"Category: {category}")
-    additional_params = get_additional_parameters(category)
+    
+    # Get parameters specific to the category and stage (if provided)
+    additional_params = get_additional_parameters(category, stage)
     temporary_modelfile = create_temporary_modelfile(original_modelfile_path, additional_params)
     temporary_model_name = f"temp_{category.lower().replace(' ', '_')}_model"
     

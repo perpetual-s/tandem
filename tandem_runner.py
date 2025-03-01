@@ -34,6 +34,10 @@ def main():
                      help="Disable meta-cognitive feedback")
     parser.add_argument("--meta-iterations", type=int, default=3,
                      help="Maximum number of meta-cognitive iterations")
+    parser.add_argument("--hybridize", action="store_true", default=True,
+                     help="Use solution hybridization for low confidence answers")
+    parser.add_argument("--no-hybridize", action="store_false", dest="hybridize",
+                     help="Disable solution hybridization")
     parser.add_argument("--file", action="store_true", 
                      help="Read query from prompt.txt instead of user input")
     args = parser.parse_args()
@@ -41,7 +45,7 @@ def main():
     # Step 0: Get query from user input or prompt.txt
     print_header("Project Tandem")
     colored_print("An AI-powered problem-solving framework", Colors.YELLOW)
-    print()
+    print("\n")
     
     print_step(1, "Getting problem statement")
     
@@ -78,6 +82,7 @@ def main():
     lines = query.strip().split("\n")
     for line in lines:
         print(f"{Colors.YELLOW}  {line}{Colors.ENDC}")
+    print("\n")
 
     # Step 1: Prepare a temporary model based on the query's classification
     print_step(2, "Creating specialized model for your problem")
@@ -89,19 +94,29 @@ def main():
         colored_print("Error preparing temporary model.", Colors.RED, bold=True)
         return
         
-    colored_print(f"Problem classified as: {problem_category}", Colors.GREEN)
+    colored_print(f"\nProblem classified as: {problem_category}", Colors.GREEN)
     colored_print(f"Using optimized model: {temp_model}", Colors.GREEN)
+    print("\n")
 
     # Step 2: Use self-consistency to solve the problem
     print_step(3, f"Solving with self-consistency ({args.iterations} iterations)")
     
     # Display configuration
+    colored_print(f"✓ Generating {args.iterations} diverse solutions", Colors.GREEN)
+    
     if args.meta:
         colored_print(f"✓ Meta-cognitive feedback enabled", Colors.GREEN)
-        colored_print(f"✓ Confidence threshold: {args.confidence}%", Colors.GREEN)
-        colored_print(f"✓ Max meta iterations: {args.meta_iterations}", Colors.GREEN)
+        colored_print(f"  • Confidence threshold: {args.confidence}%", Colors.GREEN)
+        colored_print(f"  • Max meta iterations: {args.meta_iterations}", Colors.GREEN)
     else:
         colored_print("✗ Meta-cognitive feedback disabled", Colors.YELLOW)
+        
+    if args.hybridize:
+        colored_print(f"✓ Solution hybridization enabled", Colors.GREEN)
+    else:
+        colored_print("✗ Solution hybridization disabled", Colors.YELLOW)
+    
+    print("\n")
     
     results = self_consistency_solve(
         query, 
@@ -110,12 +125,13 @@ def main():
         use_meta_cognitive=args.meta,
         confidence_threshold=args.confidence,
         meta_max_iterations=args.meta_iterations,
-        problem_category=problem_category  # Pass the category to avoid reclassification
+        problem_category=problem_category,  # Pass the category to avoid reclassification
+        use_hybridization=args.hybridize
     )
     
     # Print the solution with enhanced UI
     print_header("Solution Results")
-    print()
+    print("\n")
     
     # Print agreement statistics in a visually appealing way
     metadata = results["metadata"]
@@ -128,44 +144,81 @@ def main():
     print(f"   Agreement: ", end="")
     colored_print(f"{agreement:.1f}%", agreement_color, bold=True)
     
-    # Display answer distribution as a horizontal bar chart
-    if metadata.get('answer_counts'):
-        print("\n📈 Answer Distribution:")
+    # Display answer distribution with weighted scoring
+    if metadata.get('answer_counts') and metadata.get('weighted_scores'):
+        print("\n📊 Answer Evaluation:")
         answer_counts = metadata.get('answer_counts', {})
-        max_count = max(answer_counts.values())
+        weighted_scores = metadata.get('weighted_scores', {})
+        max_count = max(answer_counts.values()) if answer_counts else 0
+        max_weight = max(weighted_scores.values()) if weighted_scores else 0
         total_answers = sum(answer_counts.values())
         
-        # Sort answers by count (descending)
-        sorted_answers = sorted(answer_counts.items(), key=lambda x: x[1], reverse=True)
+        # Sort answers by weighted score (descending)
+        sorted_by_weight = sorted(weighted_scores.items(), key=lambda x: x[1], reverse=True)
         
-        for answer, count in sorted_answers:
-            # Calculate percentage and bar length
-            percentage = (count / total_answers) * 100
-            bar_length = int((count / max_count) * 20)  # Scale to max 20 chars
+        # Display header
+        print(f"   {'Answer':<20} {'Count':<8} {'Weight':<8} {'Quality'}")
+        
+        for answer, weight in sorted_by_weight:
+            count = answer_counts[answer]
+            
+            # Calculate percentage and bar length based on weight
+            bar_length = int((weight / max_weight) * 20) if max_weight > 0 else 0
             bar = "█" * bar_length
             
-            # Choose color based on count relative to max
-            color = Colors.GREEN if count == max_count else Colors.YELLOW
+            # Choose color based on weight relative to max
+            color = Colors.GREEN if weight == max_weight else Colors.YELLOW
             
-            # Print the bar with count and percentage
-            print(f"   {answer}: ", end="")
-            colored_print(f"{bar} {count} ({percentage:.1f}%)", color)
+            # Print the bar with count and weight
+            answer_display = answer[:18] + '..' if len(answer) > 20 else answer
+            print(f"   {answer_display:<20} {count:<8} {weight:<8.1f}", end="")
+            colored_print(f"{bar}", color)
+            
+        # Explain the quality scoring
+        print("\n   Quality factors considered:")
+        print("   • Verification steps (+0.5)")
+        print("   • Structured format (+0.5)")
+        print("   • Step-by-step reasoning (+0.3)")
+        print("   • Detailed work (+0.4)")
+        print("   • Appropriate length (+0.3)")
     
     # Verification results
-    print("\n✅ Verification")
+    print("\n\n✅ Verification")
     is_correct = results['verification']['is_correct']
     verification_color = Colors.GREEN if is_correct else Colors.YELLOW
     verification_symbol = "✓" if is_correct else "!"
     
     print(f"   Correct: ", end="")
     colored_print(f"{verification_symbol} {is_correct}", verification_color, bold=True)
-    print(f"   Feedback: {results['verification']['feedback']}")
+    print(f"   Feedback: {results['verification']['feedback']}\n")
+    
+    # Show solution enhancement details
+    print_header("Solution Enhancement")
+    
+    # Show hybridization information if applied
+    if results.get("hybridization_applied", False):
+        print("\n🧠 Solution Hybridization")
+        colored_print("✓ Applied: Combined multiple solution approaches", Colors.GREEN, bold=True)
+        if metadata.get("hybridization_note"):
+            print(f"📝 {metadata['hybridization_note']}")
+        print("🧩 Created an optimal hybrid answer using the best reasoning from multiple solutions")
     
     # Meta-cognitive information with better visual indicators
     if results["meta_cognitive_applied"]:
-        print_header("Meta-Cognitive Refinement")
+        print("\n🔍 Meta-Cognitive Refinement")
         
+        # Display actual iterations used
         print(f"🔄 Iterations used: {results['meta_iterations_used']}")
+        
+        # Display how many iterations were needed based on confidence level
+        agreement = metadata.get('agreement_percentage', 0)
+        if agreement < 40:
+            print(f"🔄 Required iterations for confidence level {agreement:.1f}%: 5")
+        elif agreement < 80:
+            print(f"🔄 Required iterations for confidence level {agreement:.1f}%: 3")
+        else:
+            print(f"🔄 Required iterations for confidence level {agreement:.1f}%: {args.meta_iterations}")
+            
         print(f"🎯 Confidence threshold: {args.confidence}%")
         print(f"🧩 Problem category: {metadata.get('problem_category', 'Not classified')}")
         
@@ -179,6 +232,13 @@ def main():
         # Print issues resolved
         if "issues_resolved" in metadata:
             print(f"\n🛠️ Total issues resolved: {metadata['issues_resolved']}")
+            
+        # Display final verification if available
+        if metadata.get("final_verification"):
+            verification_text = metadata["final_verification"]
+            shortened = f"{verification_text[:150]}..." if len(verification_text) > 150 else verification_text
+            print(f"\n✅ Final verification result:")
+            print(f"   {shortened}")
     
     final_answer = results["solution"]
 
@@ -189,6 +249,7 @@ def main():
     
     # Final solution display
     print_header("Final Solution")
+    print("\n")
     
     # Add a styled box around the solution for emphasis
     print("┌" + "─" * 78 + "┐")
@@ -202,8 +263,9 @@ def main():
     print("└" + "─" * 78 + "┘")
     
     # Final message
-    print()
+    print("\n")
     colored_print("✨ Solution process complete!", Colors.GREEN, bold=True)
+    print("\n")
 
 if __name__ == "__main__":
     main()

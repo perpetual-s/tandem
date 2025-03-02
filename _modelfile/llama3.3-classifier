@@ -1,5 +1,4 @@
 FROM llama3.3:70b
-
 TEMPLATE """{{ if .System }}<|im_start|>system
 {{ .System }}<|im_end|>
 {{ end }}{{ if .Prompt }}<|im_start|>user

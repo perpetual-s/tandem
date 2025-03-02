@@ -57,7 +57,8 @@ def generate_diverse_answers(problem: str, model: str, num_answers: int = 5, pro
     - problem_category: Optional category override (already detected in tandem_runner.py)
     """
     # Import inside function to avoid circular imports
-    from model_manager import get_additional_parameters, create_temporary_model, create_temporary_modelfile, delete_temporary_model, ORIGINAL_MODELFIL_PATH
+    from model_manager import get_additional_parameters, create_temporary_model, create_temporary_modelfile, delete_temporary_model
+    from tandem.utils.config import MODELFILE_PATHS
     
     # Use the provided problem_category rather than reclassifying
     if problem_category:
@@ -85,7 +86,7 @@ def generate_diverse_answers(problem: str, model: str, num_answers: int = 5, pro
         print(f"Using diverse solution parameters\n")
     
     # Create the specialized model
-    solver_modelfile = create_temporary_modelfile(ORIGINAL_MODELFIL_PATH, solver_params)
+    solver_modelfile = create_temporary_modelfile(MODELFILE_PATHS['BASE'], solver_params)
     create_temporary_model(solver_model_name, solver_modelfile)
     print(f"\nCreated specialized model: {solver_model_name}\n")
     
@@ -608,11 +609,12 @@ def verify_answer_correctness(selected_answer: str, problem: str, model: str) ->
     Returns a tuple of (is_correct, feedback).
     """
     # Import here to avoid circular imports
-    from model_manager import get_additional_parameters, create_temporary_model, create_temporary_modelfile, delete_temporary_model, ORIGINAL_MODELFIL_PATH
+    from model_manager import get_additional_parameters, create_temporary_model, create_temporary_modelfile, delete_temporary_model
+    from tandem.utils.config import MODELFILE_PATHS
     
     # Create a specialized model for verification with optimized parameters
     verification_params = get_additional_parameters("verification")
-    verification_modelfile = create_temporary_modelfile(ORIGINAL_MODELFIL_PATH, verification_params)
+    verification_modelfile = create_temporary_modelfile(MODELFILE_PATHS['BASE'], verification_params)
     verification_model_name = "temp_verification_model"
     
     create_temporary_model(verification_model_name, verification_modelfile)

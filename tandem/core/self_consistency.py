@@ -11,8 +11,8 @@ from typing import List, Dict, Tuple, Any
 from tandem.utils.common import get_model_response
 from tandem.models.manager import get_optimal_parameters, create_model, delete_model, create_modelfile, classify_problem
 
-# Default paths
-DEFAULT_MODEL_PATH = "_modelfile/llama3.3-70b"
+# Import model paths from config
+from tandem.utils.config import MODELFILE_PATHS
 
 def normalize_math_answer(answer: str) -> str:
     """
@@ -174,8 +174,7 @@ def generate_diverse_answers(problem: str, model: str, num_answers: int = 5, pro
     Returns:
         List of solution strings
     """
-    # Use the models.manager module for model management
-    from tandem.models.manager import DEFAULT_BASE_MODEL_PATH
+    # Model paths are imported from tandem.utils.config
     
     # Classify the problem if no category was provided
     if not problem_category:
@@ -196,7 +195,7 @@ def generate_diverse_answers(problem: str, model: str, num_answers: int = 5, pro
         print(f"Using diverse solution parameters")
     
     # Create the specialized model
-    solver_modelfile = create_modelfile(DEFAULT_MODEL_PATH, solver_params)
+    solver_modelfile = create_modelfile(MODELFILE_PATHS['BASE'], solver_params)
     create_model(solver_model_name, solver_modelfile)
     print(f"Created specialized model: {solver_model_name}")
     
@@ -373,12 +372,11 @@ def verify_answer_correctness(selected_answer: str, problem: str, model: str) ->
     Returns:
         Tuple of (is_correct, feedback)
     """
-    # Use the models.manager module for model management
-    from tandem.models.manager import DEFAULT_BASE_MODEL_PATH
+    # Model paths are imported from tandem.utils.config
     
     # Create a specialized model for verification with optimized parameters
     verification_params = get_optimal_parameters("verification")
-    verification_modelfile = create_modelfile(DEFAULT_BASE_MODEL_PATH, verification_params)
+    verification_modelfile = create_modelfile(MODELFILE_PATHS['BASE'], verification_params)
     verification_model_name = "temp_verification_model"
     
     create_model(verification_model_name, verification_modelfile)

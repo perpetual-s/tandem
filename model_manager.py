@@ -2,11 +2,10 @@ import os
 import re
 from common_utils import get_model_response, time_function_call 
 
-# Define paths here to avoid circular imports
-ORIGINAL_MODELFIL_PATH = "_modelfile/llama3.3-70b"
-CLASSIFIER_MODELFIL_PATH = "_modelfile/llama3.3-classifier"
+# Use shared config for model paths
+from tandem.utils.config import MODELFILE_PATHS
 
-def classify_problem(problem: str, classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH) -> str:
+def classify_problem(problem: str, classifier_modelfile_path: str = MODELFILE_PATHS['CLASSIFIER']) -> str:
     """
     Creates a temporary classifier model using the provided classifier modelfile,
     uses it to classify the problem, and then deletes the classifier.
@@ -271,7 +270,7 @@ def get_additional_parameters(problem_type: str, stage: str = None) -> str:
             "PARAMETER min_p 0.05\n"
         )
 
-def create_temporary_modelfile(original_modelfile_path: str = ORIGINAL_MODELFIL_PATH, additional_params: str = "") -> str:
+def create_temporary_modelfile(original_modelfile_path: str = MODELFILE_PATHS['BASE'], additional_params: str = "") -> str:
     """
     Creates a temporary modelfile content by appending additional parameters
     to the original modelfile.
@@ -316,8 +315,8 @@ def delete_temporary_model(model_name: str) -> bool:
     return True
 
 def prepare_temporary_model(problem: str, 
-                              original_modelfile_path: str = ORIGINAL_MODELFIL_PATH,
-                              classifier_modelfile_path: str = CLASSIFIER_MODELFIL_PATH,
+                              original_modelfile_path: str = MODELFILE_PATHS['BASE'],
+                              classifier_modelfile_path: str = MODELFILE_PATHS['CLASSIFIER'],
                               return_category: bool = False,
                               stage: str = None):
     """

@@ -11,12 +11,9 @@ import time
 from typing import Optional
 from pathlib import Path
 from tandem.utils.common import get_model_response, resolve_path
+from tandem.utils.config import MODELFILE_PATHS
 
-# Default paths for modelfiles
-DEFAULT_BASE_MODEL_PATH = "_modelfile/llama3.3-70b"
-DEFAULT_CLASSIFIER_PATH = "_modelfile/llama3.3-classifier"
-
-def classify_problem(problem: str, classifier_modelfile_path: str = DEFAULT_CLASSIFIER_PATH) -> str:
+def classify_problem(problem: str, classifier_modelfile_path: str = MODELFILE_PATHS['CLASSIFIER']) -> str:
     """
     Classifies a problem into a category (math, coding, writing, etc.).
     
@@ -232,8 +229,8 @@ def delete_model(model_name: str) -> bool:
     return True
 
 def prepare_model(problem: str, 
-                  original_modelfile_path: str = DEFAULT_BASE_MODEL_PATH,
-                  classifier_modelfile_path: str = DEFAULT_CLASSIFIER_PATH) -> Optional[str]:
+                  original_modelfile_path: str = MODELFILE_PATHS['BASE'],
+                  classifier_modelfile_path: str = MODELFILE_PATHS['CLASSIFIER']) -> Optional[str]:
     """
     Prepares a model optimized for the given problem by:
     1. Classifying the problem

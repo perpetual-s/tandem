@@ -10,11 +10,10 @@ from common_utils import (
     Colors
 )
 
-# Global variables for modelfile locations.
-ORIGINAL_MODELFIL_PATH = "_modelfile/llama3.3-70b"
-CLASSIFIER_MODELFIL_PATH = "_modelfile/llama3.3-classifier"
+# Import model paths from shared config
+from tandem.utils.config import MODELFILE_PATHS
 
-# Import these after defining the paths to avoid circular imports
+# Import model manager and self-consistency modules
 import model_manager
 from self_consistency import self_consistency_solve
 

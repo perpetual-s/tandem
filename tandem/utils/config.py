@@ -7,7 +7,8 @@ across different components of the system.
 
 # Modelfile paths
 MODELFILE_PATHS = {
-    'BASE': "_modelfile/llama3.3-70b",  # Default base model
-    'CLASSIFIER': "_modelfile/llama3.3-classifier",  # Classifier model
-    'M1': "_modelfile/llama3.3-m1",  # M1-optimized model
+    'BASE': "tandem/utils/modelfile/llama3.3-70b",  # Default base model
+    'CLASSIFIER': "tandem/utils/modelfile/llama3.3-classifier",  # Classifier model
+    'M1': "tandem/utils/modelfile/llama3.3-m1",  # M1-optimized model
+    # To use Qwen model, change 'BASE' to "tandem/utils/modelfile/qwen2.5-72b"
 }

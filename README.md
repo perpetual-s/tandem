@@ -2,7 +2,7 @@
 
 ## A Framework for Enhancing Local Large Language Models
 
-## Performance Comparison
+### Performance Comparison
 
 The following charts demonstrate the effectiveness of Project Tandem (using Llama3.3-70B) compared to the base Llama3.3-70B model on the 2024 AIME I & II mathematics competitions:
 
@@ -10,6 +10,8 @@ The following charts demonstrate the effectiveness of Project Tandem (using Llam
 <img src="assets/images/Correctness%20Comparison.png" width="350" alt="Correctness Comparison (2024 AIME I & II)"/>
 <img src="assets/images/Improvement%20in%20Correctness.png" width="356" alt="Improvement in Correctness (2024 AIME I & II)"/>
 </div>
+
+Project Tandem achieved a 42.86% increase in correctness on the 2024 AIME I & II mathematics competitions.
 
 ### Introduction
 

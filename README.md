@@ -2,6 +2,16 @@
 
 ## A Framework for Enhancing Local Large Language Models
 
+## Performance Comparison
+
+The following charts demonstrate the effectiveness of Project Tandem (using Llama3.3-70B) compared to the base Llama3.3-70B model on the 2024 AIME I & II mathematics competitions:
+
+1. **Correctness Comparison (2024 AIME I & II)**
+   ![Correctness Comparison](assets/images/Correctness%20Comparison.png)
+
+2. **Improvement in Correctness (2024 AIME I & II)**
+   ![Improvement in Correctness](assets/images/Improvement%20in%20Correctness.png)
+
 ### Introduction
 
 Project Tandem is an advanced framework designed to significantly improve the performance of local Large Language Models (LLMs) like Llama-3.3-70B without requiring fine-tuning or model modifications. By implementing sophisticated prompting strategies, dynamic parameter optimization, and a self-consistency approach with automated verification, Tandem enables locally-run models to produce higher quality responses that rival those of much larger, cloud-based systems.
